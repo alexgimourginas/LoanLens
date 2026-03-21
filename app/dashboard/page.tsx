@@ -243,7 +243,7 @@ export default function Dashboard() {
 
   // ── Chat ───────────────────────────────────────────────────────────────────
 
-  async function sendChat(e: React.SyntheticEvent) {
+  async function sendChat(e: React.FormEvent) {
     e.preventDefault();
     const msg = chatInput.trim();
     if (!msg || chatLoading) return;
@@ -256,13 +256,43 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: msg,
-          loanData: loan,
-          calculatedData: { months, totalInterest, effectivePayment: effectivePmt },
+          loans: {
+            loan: {
+              name: loan.name,
+              debtType: debtLabel(loan.debt_type),
+              balance: loan.balance,
+              interestRateApr: loan.interest_rate,
+              monthlyPayment: loan.monthly_payment,
+              monthlyIncome: loan.monthly_income,
+            },
+            dashboard: {
+              extraPaymentPerMonth: extra,
+              effectiveMonthlyPayment: effectivePmt,
+              monthsToPayoff: months,
+              totalInterestEstimate: totalInterest,
+              projectedPayoffDate: futureDate(months),
+            },
+          },
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        advice?: string;
+        error?: string;
+        message?: string;
+        reply?: string;
+      };
+      if (!res.ok) {
+        const err =
+          typeof data.error === "string"
+            ? data.error
+            : `Something went wrong (${res.status}).`;
+        setMessages((prev) => [...prev, { role: "assistant", content: err }]);
+        return;
+      }
       const reply =
-        data.message ?? data.content ?? data.reply ?? data.text ?? "Sorry, something went wrong.";
+        (typeof data.advice === "string" && data.advice)
+          ? data.advice
+          : data.message ?? data.reply ?? "Sorry, I couldn’t generate a reply.";
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch {
       setMessages((prev) => [
