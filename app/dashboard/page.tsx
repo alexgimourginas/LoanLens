@@ -46,6 +46,12 @@ const DEMO: LoanData = {
 
 function calcAmortization(balance: number, annualRate: number, payment: number) {
   const r = annualRate / 100 / 12;
+  const minPayment = balance * r;
+  if (payment <= minPayment) {
+    // Payment doesn't cover interest — loan can never be paid off
+    return { months: 0, totalInterest: 0, schedule: [], impossible: true };
+  }
+
   let remaining = balance;
   let totalInterest = 0;
   const schedule: { month: number; balance: number; interest: number; principal: number }[] = [];
@@ -63,7 +69,7 @@ function calcAmortization(balance: number, annualRate: number, payment: number) 
       principal: Math.round(principal),
     });
   }
-  return { months: schedule.length, totalInterest: Math.round(totalInterest), schedule };
+  return { months: schedule.length, totalInterest: Math.round(totalInterest), schedule, impossible: false };
 }
 
 function debtLabel(type: string) {
@@ -157,6 +163,35 @@ export default function Dashboard() {
   const [chatLoading, setChatLoading] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
+  // Email notifications state
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifyStatus, setNotifyStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
+  const [notifyError, setNotifyError] = useState("");
+
+  async function sendNotification(e: React.SyntheticEvent) {
+    e.preventDefault();
+    if (!notifyEmail.trim() || notifyStatus === "loading") return;
+    setNotifyStatus("loading");
+    setNotifyError("");
+    try {
+      const res = await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: notifyEmail.trim() }),
+      });
+      const data = await res.json() as { ok?: boolean; error?: string };
+      if (!res.ok || data.error) {
+        setNotifyError(data.error ?? "Failed to send email.");
+        setNotifyStatus("error");
+      } else {
+        setNotifyStatus("sent");
+      }
+    } catch {
+      setNotifyError("Network error. Please try again.");
+      setNotifyStatus("error");
+    }
+  }
+
   // Fetch real loan data from Supabase using ?id= URL param
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id");
@@ -197,7 +232,7 @@ export default function Dashboard() {
 
   const effectivePmt = loan.monthly_payment + extra;
 
-  const { months, totalInterest, schedule } = useMemo(
+  const { months, totalInterest, schedule, impossible } = useMemo(
     () => calcAmortization(loan.balance, loan.interest_rate, effectivePmt),
     [loan.balance, loan.interest_rate, effectivePmt]
   );
@@ -205,9 +240,9 @@ export default function Dashboard() {
   // Base scenario only differs when extra > 0; reuse current result otherwise
   const base = useMemo(
     () => extra === 0
-      ? { months, totalInterest, schedule }
+      ? { months, totalInterest, schedule, impossible }
       : calcAmortization(loan.balance, loan.interest_rate, loan.monthly_payment),
-    [loan.balance, loan.interest_rate, loan.monthly_payment, extra, months, totalInterest, schedule]
+    [loan.balance, loan.interest_rate, loan.monthly_payment, extra, months, totalInterest, schedule, impossible]
   );
 
   const chartData = useMemo(() => {
@@ -236,8 +271,9 @@ export default function Dashboard() {
         payment: loan.monthly_payment + ex,
         months: r.months,
         totalInterest: r.totalInterest,
-        saved: baseInterest - r.totalInterest,
-        payoffDate: futureDate(r.months),
+        saved: r.impossible ? 0 : baseInterest - r.totalInterest,
+        payoffDate: r.impossible ? "Never" : futureDate(r.months),
+        impossible: r.impossible,
       };
     });
   }, [loan.balance, loan.interest_rate, loan.monthly_payment]);
@@ -345,15 +381,15 @@ export default function Dashboard() {
           />
           <StatCard
             label="Total Interest Cost"
-            value={`$${fmt(totalInterest)}`}
-            sub="at current pace"
-            color="text-red-500"
+            value={impossible ? "N/A" : `$${fmt(totalInterest)}`}
+            sub={impossible ? "Payment too low" : "at current pace"}
+            color={impossible ? "text-red-400" : "text-red-500"}
           />
           <StatCard
             label="Projected Debt Free"
-            value={futureDate(months)}
-            sub={`${months} months away`}
-            color="text-green-600"
+            value={impossible ? "Never" : futureDate(months)}
+            sub={impossible ? "Increase monthly payment" : `${months} months away`}
+            color={impossible ? "text-red-400" : "text-green-600"}
           />
         </div>
       </div>
@@ -626,21 +662,22 @@ export default function Dashboard() {
                     {[
                       {
                         label: "Months Saved",
-                        value: extra > 0 ? `${base.months - months} mo` : "—",
-                        color: extra > 0 ? "text-green-600" : "text-gray-300",
+                        value: impossible ? "N/A" : extra > 0 ? `${base.months - months} mo` : "—",
+                        color: impossible ? "text-red-400" : extra > 0 ? "text-green-600" : "text-gray-300",
                       },
                       {
                         label: "Interest Saved",
-                        value:
-                          extra > 0
+                        value: impossible
+                          ? "N/A"
+                          : extra > 0
                             ? `$${fmt(base.totalInterest - totalInterest)}`
                             : "—",
-                        color: extra > 0 ? "text-green-600" : "text-gray-300",
+                        color: impossible ? "text-red-400" : extra > 0 ? "text-green-600" : "text-gray-300",
                       },
                       {
                         label: "New Payoff Date",
-                        value: futureDate(months),
-                        color: "text-[#64A8F0]",
+                        value: impossible ? "Never" : futureDate(months),
+                        color: impossible ? "text-red-400" : "text-[#64A8F0]",
                       },
                     ].map((s) => (
                       <div
@@ -959,10 +996,10 @@ export default function Dashboard() {
                           >
                             <td className="px-6 py-3.5 font-bold">{s.label}</td>
                             <td className="px-6 py-3.5 text-[#64A8F0]">${s.payment}</td>
-                            <td className="px-6 py-3.5">{s.payoffDate}</td>
-                            <td className="px-6 py-3.5 text-red-400">${fmt(s.totalInterest)}</td>
+                            <td className={`px-6 py-3.5 ${s.impossible ? "text-red-400" : ""}`}>{s.payoffDate}</td>
+                            <td className="px-6 py-3.5 text-red-400">{s.impossible ? "N/A" : `$${fmt(s.totalInterest)}`}</td>
                             <td className="px-6 py-3.5 text-green-600 font-bold">
-                              {s.saved > 0 ? `$${fmt(s.saved)}` : "—"}
+                              {s.impossible ? "—" : s.saved > 0 ? `$${fmt(s.saved)}` : "—"}
                             </td>
                           </tr>
                         ))}
@@ -980,14 +1017,61 @@ export default function Dashboard() {
               <>
                 <h2 className="text-2xl font-black">Reminder Center</h2>
 
-                <div className="bg-blue-50 border border-[#64A8F0]/20 rounded-2xl px-5 py-4 flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-[#64A8F0] flex-shrink-0 flex items-center justify-center mt-0.5">
-                    <span className="text-white text-[9px] font-bold">i</span>
+                {/* Email notifications card */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-[#64A8F0]/10 flex items-center justify-center flex-shrink-0">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64A8F0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="M2 8l10 6 10-6" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-bold text-sm">Enable Email Notifications</div>
+                      <div className="text-xs text-gray-400 font-mono">Get reminders delivered to your inbox</div>
+                    </div>
                   </div>
-                  <p className="text-sm text-[#64A8F0] font-mono leading-relaxed">
-                    Dates are calculated from your loan info. Email &amp; SMS alerts are coming soon
-                    your team will never miss a deadline.
-                  </p>
+
+                  {notifyStatus === "sent" ? (
+                    <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-center gap-2.5">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      <span className="text-green-700 text-sm font-mono">
+                        Test email sent to <strong>{notifyEmail}</strong>. Check your inbox!
+                      </span>
+                    </div>
+                  ) : (
+                    <form onSubmit={sendNotification} className="flex flex-col gap-3">
+                      <input
+                        type="email"
+                        value={notifyEmail}
+                        onChange={(e) => { setNotifyEmail(e.target.value); setNotifyStatus("idle"); setNotifyError(""); }}
+                        placeholder="you@example.com"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-[#64A8F0] focus:ring-2 focus:ring-[#64A8F0]/20 text-sm font-mono outline-none transition-all"
+                      />
+                      {notifyError && (
+                        <p className="text-red-400 text-xs font-mono">{notifyError}</p>
+                      )}
+                      <button
+                        type="submit"
+                        disabled={!notifyEmail.trim() || notifyStatus === "loading"}
+                        className="w-full bg-[#64A8F0] hover:bg-[#4a94df] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2"
+                      >
+                        {notifyStatus === "loading" ? (
+                          <>
+                            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                            </svg>
+                            SENDING...
+                          </>
+                        ) : (
+                          "ENABLE NOTIFICATIONS →"
+                        )}
+                      </button>
+                    </form>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3">
