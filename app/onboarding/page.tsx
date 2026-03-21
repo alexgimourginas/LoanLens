@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabase";
 const DEBT_TYPES = [
   { value: "federal_student_loan", label: "Federal Student Loan" },
   { value: "private_student_loan", label: "Private Student Loan" },
-  { value: "credit_card", label: "Credit Card" },
   { value: "personal_loan", label: "Personal Loan" },
 ];
 
@@ -176,7 +175,8 @@ export default function Onboarding() {
                       type="number"
                       value={form.balance}
                       onChange={(e) => set("balance", e.target.value)}
-                      placeholder="24,500"
+                      onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                      placeholder="24500"
                       className={`w-full pl-8 pr-4 py-3.5 rounded-xl border text-sm font-mono bg-white text-black placeholder:text-gray-300 outline-none transition-all duration-150 focus:ring-2 focus:ring-[#64A8F0]/30 ${
                         errors.balance ? "border-red-300" : "border-gray-200 focus:border-[#64A8F0]"
                       }`}
@@ -199,6 +199,7 @@ export default function Onboarding() {
                         step="0.01"
                         value={form.interest_rate}
                         onChange={(e) => set("interest_rate", e.target.value)}
+                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
                         placeholder="6.5"
                         className={`w-full pl-4 pr-8 py-3.5 rounded-xl border text-sm font-mono bg-white text-black placeholder:text-gray-300 outline-none transition-all duration-150 focus:ring-2 focus:ring-[#64A8F0]/30 ${
                           errors.interest_rate ? "border-red-300" : "border-gray-200 focus:border-[#64A8F0]"
@@ -221,6 +222,7 @@ export default function Onboarding() {
                         type="number"
                         value={form.monthly_payment}
                         onChange={(e) => set("monthly_payment", e.target.value)}
+                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
                         placeholder="350"
                         className={`w-full pl-7 pr-4 py-3.5 rounded-xl border text-sm font-mono bg-white text-black placeholder:text-gray-300 outline-none transition-all duration-150 focus:ring-2 focus:ring-[#64A8F0]/30 ${
                           errors.monthly_payment ? "border-red-300" : "border-gray-200 focus:border-[#64A8F0]"
@@ -319,7 +321,8 @@ export default function Onboarding() {
                       type="number"
                       value={form.monthly_income}
                       onChange={(e) => set("monthly_income", e.target.value)}
-                      placeholder="4,200"
+                      onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                      placeholder="4200"
                       className="w-full pl-8 pr-4 py-3.5 rounded-xl border border-gray-200 focus:border-[#64A8F0] text-sm font-mono bg-white text-black placeholder:text-gray-300 outline-none transition-all duration-150 focus:ring-2 focus:ring-[#64A8F0]/30"
                     />
                   </div>

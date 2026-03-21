@@ -28,6 +28,7 @@ type LoanData = {
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type Tab = "command" | "visualizations" | "budget" | "reminders";
+type LoanStore = Record<string, LoanData | null>;
 
 // ─── Demo data (swap with Supabase fetch via ?id= param when ready) ──────────
 
@@ -68,7 +69,7 @@ function debtLabel(type: string) {
   const m: Record<string, string> = {
     federal_student_loan: "Federal Student Loan",
     private_student_loan: "Private Student Loan",
-    credit_card: "Credit Card",
+    credit_card: "Credit Card (Demo)",
     personal_loan: "Personal Loan",
   };
   return m[type] ?? type;
@@ -106,25 +107,88 @@ function StatCard({
   );
 }
 
+const DEBT_TYPES = [
+  { value: "federal_student_loan", label: "Federal Student Loan" },
+  { value: "private_student_loan", label: "Private Student Loan" },
+  { value: "credit_card", label: "Credit Card (Demo)" },
+  { value: "personal_loan", label: "Personal Loan" },
+];
+
+// Hardcoded demo data shown when Credit Card (Demo) is selected
+const CREDIT_CARD_DEMO: LoanData = {
+  name: null,
+  debt_type: "credit_card",
+  balance: 2340,
+  interest_rate: 24.99,
+  monthly_payment: 85,
+  monthly_income: 1400,
+};
+
 // ─── Main Dashboard ──────────────────────────────────────────────────────────
 
 export default function Dashboard() {
   const router = useRouter();
-  const loan = DEMO; // TODO: const id = useSearchParams().get("id"); then fetch from Supabase
 
+  const [loan, setLoan] = useState<LoanData>(DEMO);
+  const [debtType, setDebtType] = useState(DEMO.debt_type);
+  const originalLoan = useRef<LoanData>(DEMO);
+
+  // Tracks filled-in data per debt type. null = not yet entered (will trigger modal).
+  // Only credit_card is pre-seeded — the user's real type gets seeded in the useEffect below.
+  const [loanStore, setLoanStore] = useState<LoanStore>({
+    credit_card: CREDIT_CARD_DEMO,
+  });
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingType, setPendingType] = useState<string | null>(null);
+  const [modalForm, setModalForm] = useState({ balance: "", interest_rate: "", monthly_payment: "" });
+  const [modalErrors, setModalErrors] = useState({ balance: "", interest_rate: "", monthly_payment: "" });
   const [tab, setTab] = useState<Tab>("command");
   const [extra, setExtra] = useState(0);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      content: `Hi${loan.name ? ` ${loan.name}` : ""}! I'm your LoanLens AI advisor. I already know your loan details. Ask me anything about your payoff strategy, repayment options, or what-if scenarios.`,
+      content: `Hi! I'm your LoanLens AI advisor. I already know your loan details. Ask me anything about your payoff strategy, repayment options, or what-if scenarios.`,
     },
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const chatEnd = useRef<HTMLDivElement>(null);
 
+  // Fetch real loan data from Supabase using ?id= URL param
   useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) {
+      // No Supabase id — seed the fallback DEMO type so switching back doesn't re-trigger modal
+      setLoanStore((prev) => ({ ...prev, [DEMO.debt_type]: DEMO }));
+      return;
+    }
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase
+        .from("loans")
+        .select("*")
+        .eq("id", id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            const d = data as LoanData;
+            setLoan(d);
+            originalLoan.current = d;
+            setDebtType(d.debt_type);
+            setLoanStore((prev) => ({ ...prev, [d.debt_type]: d }));
+            setMessages([{
+              role: "assistant",
+              content: `Hi${d.name ? ` ${d.name}` : ""}! I'm your LoanLens AI advisor. I already know your loan details. Ask me anything about your payoff strategy, repayment options, or what-if scenarios.`,
+            }]);
+          }
+        });
+    });
+  }, []);
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
     chatEnd.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -179,7 +243,7 @@ export default function Dashboard() {
 
   // ── Chat ───────────────────────────────────────────────────────────────────
 
-  async function sendChat(e: React.FormEvent) {
+  async function sendChat(e: React.SyntheticEvent) {
     e.preventDefault();
     const msg = chatInput.trim();
     if (!msg || chatLoading) return;
@@ -307,13 +371,59 @@ export default function Dashboard() {
                 <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <span className="font-bold text-sm">Your Loan</span>
-                    <span className="text-xs font-mono text-[#64A8F0] bg-blue-50 px-2.5 py-0.5 rounded-full border border-[#64A8F0]/20">
-                      Active
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setPendingType(debtType);
+                          setModalForm({
+                            balance: String(loan.balance),
+                            interest_rate: String(loan.interest_rate),
+                            monthly_payment: String(loan.monthly_payment),
+                          });
+                          setModalErrors({ balance: "", interest_rate: "", monthly_payment: "" });
+                          setModalOpen(true);
+                        }}
+                        className="flex items-center gap-1.5 text-xs font-mono text-gray-400 hover:text-[#64A8F0] transition-colors"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <path d="M8.5 1.5a1.414 1.414 0 0 1 2 2L4 10 1 11l1-3 6.5-6.5z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Edit
+                      </button>
+                      <span className="text-xs font-mono text-[#64A8F0] bg-blue-50 px-2.5 py-0.5 rounded-full border border-[#64A8F0]/20">
+                        Active
+                      </span>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-100">
+                    {/* Loan Type — selectable dropdown */}
+                    <div className="bg-white px-6 py-4">
+                      <div className="text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">Loan Type</div>
+                      <select
+                        value={debtType}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const stored = loanStore[val];
+                          if (stored) {
+                            setDebtType(val);
+                            setLoan(stored);
+                            setExtra(0);
+                          } else {
+                            // Not filled in yet — open modal
+                            setPendingType(val);
+                            setModalForm({ balance: "", interest_rate: "", monthly_payment: "" });
+                            setModalErrors({ balance: "", interest_rate: "", monthly_payment: "" });
+                            setModalOpen(true);
+                          }
+                        }}
+                        className="text-sm font-bold font-mono text-black bg-transparent border-none outline-none cursor-pointer hover:text-[#64A8F0] transition-colors w-full"
+                      >
+                        {DEBT_TYPES.map((dt) => (
+                          <option key={dt.value} value={dt.value}>{dt.label}</option>
+                        ))}
+                      </select>
+                    </div>
                     {[
-                      { label: "Loan Type", value: debtLabel(loan.debt_type) },
                       { label: "Current Balance", value: `$${fmt(loan.balance)}` },
                       { label: "Interest Rate", value: `${loan.interest_rate}% APR` },
                       { label: "Monthly Payment", value: `$${loan.monthly_payment}` },
@@ -321,7 +431,6 @@ export default function Dashboard() {
                         label: "Monthly Income",
                         value: loan.monthly_income ? `$${fmt(loan.monthly_income)}` : "—",
                       },
-                      { label: "Autopay Status", value: "Not configured" },
                     ].map((row) => (
                       <div key={row.label} className="bg-white px-6 py-4">
                         <div className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">
@@ -330,6 +439,12 @@ export default function Dashboard() {
                         <div className="text-sm font-bold mt-1 font-mono">{row.value}</div>
                       </div>
                     ))}
+                    {/* Work In Progress */}
+                    <div className="bg-white px-6 py-4 flex items-center">
+                      <span className="text-xs font-mono text-[#64A8F0] bg-blue-50 border border-[#64A8F0]/30 px-3 py-1 rounded-full">
+                        Work In Progress
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -417,7 +532,7 @@ export default function Dashboard() {
                         {
                           dot: "bg-green-500",
                           date: futureDate(months),
-                          label: "🎉 Debt Free",
+                          label: "Debt Free",
                           desc: "Projected payoff date at your current payment pace.",
                         },
                       ].map((ev, i) => (
@@ -890,7 +1005,7 @@ export default function Dashboard() {
                     },
                     {
                       type: "success",
-                      label: "🎉 Projected Debt Free",
+                      label: "Projected Debt Free",
                       date: futureDate(months),
                       desc: "Your projected debt-free date at the current payment pace. Use the What-If Simulator to pull this date earlier.",
                       urgent: false,
@@ -951,7 +1066,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-[11px] text-gray-400 font-mono">
-                  Online · Knows your numbers
+                  Online · Secured for you
                 </span>
               </div>
             </div>
@@ -1029,6 +1144,107 @@ export default function Dashboard() {
           </form>
         </div>
       </div>
+      {/* ── Loan Setup Modal ── */}
+      {modalOpen && pendingType && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md mx-4 overflow-hidden">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <div className="font-black text-lg">Set Up Loan</div>
+                <div className="text-xs font-mono text-gray-400 mt-0.5">
+                  {DEBT_TYPES.find((d) => d.value === pendingType)?.label}
+                </div>
+              </div>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors text-gray-500 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Fields */}
+            <div className="px-6 py-5 flex flex-col gap-4">
+              {([
+                { key: "balance", label: "Total Balance", placeholder: "e.g. 18000", prefix: "$" },
+                { key: "interest_rate", label: "Annual Interest Rate", placeholder: "e.g. 6.5", suffix: "%" },
+                { key: "monthly_payment", label: "Monthly Payment", placeholder: "e.g. 200", prefix: "$" },
+              ] as { key: keyof typeof modalForm; label: string; placeholder: string; prefix?: string; suffix?: string }[]).map(({ key, label, placeholder, prefix, suffix }) => (
+                <div key={key}>
+                  <label className="text-[10px] font-mono text-gray-400 uppercase tracking-widest block mb-1.5">
+                    {label}
+                  </label>
+                  <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-[#64A8F0] focus-within:ring-2 focus-within:ring-[#64A8F0]/20 transition-all">
+                    {prefix && (
+                      <span className="px-3 text-sm font-mono text-gray-400 bg-gray-50 border-r border-gray-200 py-2.5">
+                        {prefix}
+                      </span>
+                    )}
+                    <input
+                      type="number"
+                      placeholder={placeholder}
+                      value={modalForm[key]}
+                      onChange={(e) => {
+                        setModalForm((f) => ({ ...f, [key]: e.target.value }));
+                        setModalErrors((er) => ({ ...er, [key]: "" }));
+                      }}
+                      className="flex-1 px-3 py-2.5 text-sm font-mono outline-none bg-white"
+                    />
+                    {suffix && (
+                      <span className="px-3 text-sm font-mono text-gray-400 bg-gray-50 border-l border-gray-200 py-2.5">
+                        {suffix}
+                      </span>
+                    )}
+                  </div>
+                  {modalErrors[key] && (
+                    <p className="text-xs text-red-400 font-mono mt-1">{modalErrors[key]}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end">
+              <button
+                onClick={() => setModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-mono text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  // Validate
+                  const errs = { balance: "", interest_rate: "", monthly_payment: "" };
+                  if (!modalForm.balance || Number(modalForm.balance) <= 0) errs.balance = "Required";
+                  if (!modalForm.interest_rate || Number(modalForm.interest_rate) <= 0) errs.interest_rate = "Required";
+                  if (!modalForm.monthly_payment || Number(modalForm.monthly_payment) <= 0) errs.monthly_payment = "Required";
+                  if (errs.balance || errs.interest_rate || errs.monthly_payment) {
+                    setModalErrors(errs);
+                    return;
+                  }
+                  const newLoan: LoanData = {
+                    name: loan.name,
+                    debt_type: pendingType,
+                    balance: Number(modalForm.balance),
+                    interest_rate: Number(modalForm.interest_rate),
+                    monthly_payment: Number(modalForm.monthly_payment),
+                    monthly_income: loan.monthly_income,
+                  };
+                  setLoanStore((prev) => ({ ...prev, [pendingType]: newLoan }));
+                  setLoan(newLoan);
+                  setDebtType(pendingType);
+                  setExtra(0);
+                  setModalOpen(false);
+                }}
+                className="px-5 py-2.5 rounded-xl bg-[#64A8F0] hover:bg-[#4a94df] text-white text-sm font-bold font-mono transition-colors"
+              >
+                Load Loan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

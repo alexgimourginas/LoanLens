@@ -19,8 +19,8 @@ function useReveal(threshold = 0.1) {
 
 export default function Home() {
   const router = useRouter();
-  const chartSection = useReveal(0.15);
-  const bottomSection = useReveal(0.1);
+  const { ref: chartRef, visible: chartVisible } = useReveal(0.15);
+  const { ref: bottomRef, visible: bottomVisible } = useReveal(0.1);
 
   // Wealth projection data (y = remaining debt, inverted for visual)
   const wealthPoints = [110, 108, 103, 94, 82, 66, 46, 22, 4];
@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <main className="bg-white text-black overflow-x-hidden">
 
-      {/* ─── STICKY NAV ─────────────────────────────────────────────── */}
+      {/* --STICKY NAV-- */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-white/95 backdrop-blur-md border-b-2 border-gray-300 shadow-md">
         <div className="flex flex-col gap-0.5">
           <span className="text-4xl font-black tracking-tight text-black">LoanLens</span>
@@ -75,12 +75,9 @@ export default function Home() {
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => router.push("/onboarding")}
-                className="bg-[#64A8F0] hover:bg-[#4a94df] text-white font-bold px-8 py-3.5 rounded-xl text-sm tracking-wide transition-all duration-200 shadow-lg shadow-[#64A8F0]/25 hover:shadow-[#64A8F0]/40 hover:-translate-y-0.5"
+                className="bg-[#64A8F0] hover:bg-[#4a94df] text-white font-bold px-16 py-4 rounded-xl text-base tracking-wide transition-all duration-200 shadow-lg shadow-[#64A8F0]/25 hover:shadow-[#64A8F0]/40 hover:-translate-y-0.5"
               >
                 BUILD MY PLAN →
-              </button>
-              <button className="border border-gray-200 hover:border-[#64A8F0]/50 text-gray-500 hover:text-[#64A8F0] px-8 py-3.5 rounded-xl text-sm transition-all duration-200">
-                See How It Works
               </button>
             </div>
 
@@ -177,8 +174,8 @@ export default function Home() {
 
       {/* ─── SECTION 2: COMPETITOR QUADRANT CHART ────────────────────── */}
       <div
-        ref={chartSection.ref}
-        className={`transition-all duration-700 ${chartSection.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+        ref={chartRef}
+        className={`transition-all duration-700 ${chartVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
       >
         <section className="py-14 bg-gray-200">
           <div className="max-w-5xl mx-auto px-8">
@@ -230,39 +227,37 @@ export default function Home() {
                     <polygon points="0,101 -3.5,95 3.5,95" fill="#d1d5db" />
 
                     {/* Axis labels */}
-                    <text x="105" y="3" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">High AI</text>
-                    <text x="-113" y="3" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Low AI</text>
-                    <text x="-20" y="-104" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Advanced</text>
-                    <text x="-10" y="111" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Basic</text>
+                    <text x="107" y="3" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Innovation</text>
+                    <text x="-114" y="3" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Static</text>
+                    <text x="0" y="-106" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold" textAnchor="middle">Accessibility</text>
+                    <text x="0" y="113" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold" textAnchor="middle">Inaccessibility</text>
 
-                    {/* Quadrant labels */}
-                    <text x="8" y="-82" fontSize="6" fill="#d1d5db" fontFamily="monospace" fontStyle="italic">Intelligent &amp; Advanced</text>
-                    <text x="-108" y="-82" fontSize="6" fill="#d1d5db" fontFamily="monospace" fontStyle="italic">Limited AI</text>
-                    <text x="8" y="89" fontSize="6" fill="#d1d5db" fontFamily="monospace" fontStyle="italic">AI, Basic Features</text>
-                    <text x="-108" y="89" fontSize="6" fill="#d1d5db" fontFamily="monospace" fontStyle="italic">Legacy Tools</text>
+                    {/* Quadrant corner labels */}
+                    <text x="6" y="-70" fontSize="5" fill="#e5e7eb" fontFamily="monospace" fontStyle="italic">Innovative + Accessible</text>
+                    <text x="-113" y="-70" fontSize="5" fill="#e5e7eb" fontFamily="monospace" fontStyle="italic">Static + Accessible</text>
+                    <text x="6" y="88" fontSize="5" fill="#e5e7eb" fontFamily="monospace" fontStyle="italic">Innovative + Inaccessible</text>
 
-                    {/* ── Competitor A ── */}
-                    <circle cx="-52" cy="22" r="7" fill="#94a3b8" opacity="0.85" />
-                    <text x="-52" y="36" fontSize="6" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Competitor A</text>
+                    {/* ── Mint (Top Left) ── */}
+                    <circle cx="-62" cy="-52" r="7" fill="#94a3b8" opacity="0.85" />
+                    <text x="-62" y="-62" fontSize="6" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Mint</text>
 
-                    {/* ── Competitor B ── */}
-                    <circle cx="-60" cy="-38" r="7" fill="#94a3b8" opacity="0.85" />
-                    <text x="-60" y="-46" fontSize="6" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Competitor B</text>
+                    {/* ── Bottom Right competitors ── */}
+                    <circle cx="40" cy="36" r="6" fill="#94a3b8" opacity="0.75" />
+                    <text x="40" y="48" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Credit Karma</text>
 
-                    {/* ── LoanLens ── */}
-                    {/* Outer pulse ring */}
+                    <circle cx="68" cy="48" r="6" fill="#94a3b8" opacity="0.75" />
+                    <text x="68" y="60" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">NerdWallet</text>
+
+                    <circle cx="28" cy="60" r="6" fill="#94a3b8" opacity="0.75" />
+                    <text x="28" y="72" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">StudentAid.gov</text>
+
+                    <circle cx="52" cy="74" r="6" fill="#94a3b8" opacity="0.75" />
+                    <text x="52" y="86" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Rocket Mortgage</text>
+
+                    {/* ── LoanLens (Top Right) ── */}
                     <circle cx="62" cy="-62" r="16" fill="#64A8F0" opacity="0.12" />
                     <circle cx="62" cy="-62" r="11" fill="#64A8F0" />
-                    <text
-                      x="62" y="-76"
-                      fontSize="7"
-                      fill="#64A8F0"
-                      textAnchor="middle"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      LoanLens ★
-                    </text>
+                    <text x="62" y="-76" fontSize="7" fill="#64A8F0" textAnchor="middle" fontFamily="monospace" fontWeight="bold">LoanLens ★</text>
                   </svg>
                 </div>
               </div>
@@ -288,8 +283,8 @@ export default function Home() {
 
       {/* ─── SECTION 3: WEALTH PROJECTION + NEWS ────────────────────── */}
       <div
-        ref={bottomSection.ref}
-        className={`transition-all duration-700 delay-100 ${bottomSection.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+        ref={bottomRef}
+        className={`transition-all duration-700 delay-100 ${bottomVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
       >
         <section className="py-28 bg-white">
           <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -404,32 +399,42 @@ export default function Home() {
               <div className="flex flex-col gap-4">
                 {[
                   {
-                    tag: "Student Loans",
-                    title: "Federal student loan debt hits record $1.77T as forgiveness stalls",
-                    desc: "With relief programs caught in legal limbo, borrowers are turning to AI tools to model their own payoff strategies independently.",
-                    date: "Mar 2025",
+                    tag: "CFPB",
+                    title: "The Significant Impact of Student Debt on Communities of Color",
+                    desc: "Over 90% of African-American and 72% of Latino students leave college with student loan debt, facing compounding barriers rooted in systemic financial inequality.",
+                    date: "Sep 2016",
+                    href: "https://www.consumerfinance.gov/about-us/blog/significant-impact-student-debt-communities-color/",
+                    img: "/cfpb.jpg",
                   },
                   {
-                    tag: "Credit Cards",
-                    title: "Credit card rates near 22%, the highest in 40 years",
-                    desc: "Consumers carrying balances are paying more in interest than ever, making strategic paydown plans essential for financial health.",
-                    date: "Feb 2025",
+                    tag: "Pew Research",
+                    title: "The Student Loan Default Divide: Racial Inequities Play a Role",
+                    desc: "Black and Hispanic borrowers are significantly more likely to struggle with repayment than White peers, facing higher default risk tied to degree completion gaps.",
+                    date: "Dec 2024",
+                    href: "https://www.pew.org/en/research-and-analysis/reports/2024/12/the-student-loan-default-divide-racial-inequities-play-a-role",
+                    img: "https://www.pew.org/-/media/post-launch-images/2024/12/gettyimages5379304081jpgmaster/16x9_m.jpg",
                   },
                   {
-                    tag: "Personal Finance",
-                    title: "Gen Z leads surge in AI-powered financial planning tools",
-                    desc: "A new wave of financially aware young adults is driving demand for personalized, data-driven debt management platforms.",
-                    date: "Jan 2025",
+                    tag: "PBS NewsHour",
+                    title: "If you have a money resolution for 2026, start here, experts say",
+                    desc: "Experts recommend tackling high-interest debt first, leveraging employer retirement matches, and using structured budgeting tools to build lasting financial health.",
+                    date: "Jan 2026",
+                    href: "https://www.pbs.org/newshour/economy/expert-tips-for-paying-down-debt-saving-for-retirement-and-other-financial-goals",
+                    img: "/pbs.jpg",
                   },
                 ].map((article, i) => (
-                  <div
+                  <a
                     key={i}
-                    className="group flex gap-4 p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl border border-gray-100 hover:border-[#64A8F0]/30 transition-all duration-200 cursor-pointer"
+                    href={article.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex gap-4 p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl border border-gray-100 hover:border-[#64A8F0]/30 transition-all duration-200"
                   >
-                    {/* Placeholder image thumbnail */}
-                    <div className="w-[72px] h-[72px] rounded-lg bg-[#64A8F0]/15 flex-shrink-0 flex items-center justify-center">
-                      <div className="w-7 h-7 rounded bg-gradient-to-br from-[#64A8F0]/50 to-[#4a94df]/50" />
-                    </div>
+                    <img
+                      src={article.img}
+                      alt={article.title}
+                      className="w-[72px] h-[72px] rounded-lg object-cover flex-shrink-0"
+                    />
                     <div className="flex flex-col gap-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[10px] font-mono uppercase tracking-widest text-[#64A8F0] bg-blue-50 px-2 py-0.5 rounded-full border border-[#64A8F0]/20">
@@ -446,7 +451,7 @@ export default function Home() {
                         {article.desc}
                       </p>
                     </div>
-                  </div>
+                  </a>
                 ))}
               </div>
             </div>
