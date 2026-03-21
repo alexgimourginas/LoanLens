@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 import {
   AreaChart,
   Area,
@@ -154,7 +155,7 @@ export default function Dashboard() {
   ]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
-  const chatEnd = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   // Fetch real loan data from Supabase using ?id= URL param
   useEffect(() => {
@@ -186,10 +187,10 @@ export default function Dashboard() {
     });
   }, []);
 
-  const isFirstRender = useRef(true);
   useEffect(() => {
-    if (isFirstRender.current) { isFirstRender.current = false; return; }
-    chatEnd.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
   }, [messages]);
 
   // ── Derived calculations ────────────────────────────────────────────────────
@@ -243,7 +244,7 @@ export default function Dashboard() {
 
   // ── Chat ───────────────────────────────────────────────────────────────────
 
-  async function sendChat(e: React.FormEvent) {
+  async function sendChat(e: React.SyntheticEvent) {
     e.preventDefault();
     const msg = chatInput.trim();
     if (!msg || chatLoading) return;
@@ -510,7 +511,7 @@ export default function Dashboard() {
                         <span className="text-sm text-gray-500 font-mono">{row.label}</span>
                         <div className="flex items-center gap-3">
                           {row.pct !== null && (
-                            <span className="text-[11px] font-mono text-gray-300">
+                            <span className="text-xs font-mono text-gray-500">
                               {row.pct}% of income
                             </span>
                           )}
@@ -1084,7 +1085,8 @@ export default function Dashboard() {
         </div>
 
         {/* ── AI Chat Sidebar ── */}
-        <div className="w-[360px] flex-shrink-0 bg-white border-l border-gray-100 flex flex-col h-[calc(100vh-9.5rem)] sticky top-[9.5rem]">
+        <div className="w-[480px] flex-shrink-0 flex flex-col h-[calc(100vh-9.5rem)] sticky top-[9.5rem] -mt-6 pt-0 pb-3 pl-3 pr-10 bg-[#f7f8fa]">
+        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
           {/* Chat header */}
           <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
@@ -1103,7 +1105,7 @@ export default function Dashboard() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+          <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -1116,7 +1118,21 @@ export default function Dashboard() {
                       : "bg-gray-50 text-gray-700 border border-gray-100 rounded-bl-sm"
                   }`}
                 >
-                  {msg.content}
+                  {msg.role === "user" ? msg.content : (
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                        strong: ({ children }) => <strong className="font-bold text-black">{children}</strong>,
+                        h2: ({ children }) => <p className="font-bold text-black mt-2 mb-1">{children}</p>,
+                        h3: ({ children }) => <p className="font-semibold text-black mt-1.5 mb-0.5">{children}</p>,
+                        ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-1">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-1">{children}</ol>,
+                        li: ({ children }) => <li className="text-gray-700">{children}</li>,
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             ))}
@@ -1133,7 +1149,6 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            <div ref={chatEnd} />
           </div>
 
           {/* Quick prompts */}
@@ -1172,6 +1187,7 @@ export default function Dashboard() {
               </svg>
             </button>
           </form>
+        </div>
         </div>
       </div>
       {/* ── Loan Setup Modal ── */}
