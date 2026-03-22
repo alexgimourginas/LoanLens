@@ -506,12 +506,7 @@ export default function Dashboard() {
                         <div className="text-sm font-bold mt-1 font-mono">{row.value}</div>
                       </div>
                     ))}
-                    {/* Work In Progress */}
-                    <div className="bg-white px-6 py-4 flex items-center">
-                      <span className="text-xs font-mono text-[#64A8F0] bg-blue-50 border border-[#64A8F0]/30 px-3 py-1 rounded-full">
-                        Work In Progress
-                      </span>
-                    </div>
+                    <div className="bg-white" />
                   </div>
                 </div>
 
@@ -624,13 +619,16 @@ export default function Dashboard() {
                 <div className="md:hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                   <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-[#64A8F0] flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-xs font-bold">AI</span>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="7" />
+                        <line x1="16.5" y1="16.5" x2="22" y2="22" />
+                      </svg>
                     </div>
                     <div>
                       <div className="font-bold text-sm">LoanLens AI</div>
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                        <span className="text-[11px] text-gray-400 font-mono">Online · Secured for you</span>
+                        <span className="text-[11px] text-gray-400 font-mono">Powered by Claude</span>
                       </div>
                     </div>
                   </div>
@@ -1253,7 +1251,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-[11px] text-gray-400 font-mono">
-                  Online · Secured for you
+                  Powered by Claude
                 </span>
               </div>
             </div>
