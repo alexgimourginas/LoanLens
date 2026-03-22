@@ -1244,7 +1244,10 @@ export default function Dashboard() {
           {/* Chat header */}
           <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-[#64A8F0] flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-xs font-bold">AI</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="16.5" y1="16.5" x2="22" y2="22" />
+              </svg>
             </div>
             <div>
               <div className="font-bold text-sm">LoanLens AI</div>
