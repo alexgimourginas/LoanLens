@@ -96,11 +96,11 @@ export default function Home() {
           </div>
 
           {/* ── Right: Monitor mockup ── */}
-          <div className="flex-1 flex justify-center items-center relative max-md:hidden">
+          <div className="flex-1 flex justify-center items-center relative">
             {/* Soft glow behind */}
             <div className="absolute w-[350px] h-[350px] rounded-full bg-[#64A8F0]/8 blur-3xl" />
 
-            <div className="relative drop-shadow-2xl max-md:scale-[0.52] max-md:origin-top">
+            <div className="relative drop-shadow-2xl max-md:scale-[0.52] max-md:origin-top max-md:-mb-52">
               {/* Screen */}
               <div className="w-[614px] h-[414px] bg-[#070d09] rounded-2xl border-[12px] border-[#374151] overflow-hidden relative">
                 {/* Browser bar */}
