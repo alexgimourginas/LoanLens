@@ -96,7 +96,7 @@ export default function Home() {
           </div>
 
           {/* ── Right: Monitor mockup ── */}
-          <div className="flex-1 flex justify-center items-center relative max-md:h-56">
+          <div className="flex-1 flex justify-center items-center relative max-md:hidden">
             {/* Soft glow behind */}
             <div className="absolute w-[350px] h-[350px] rounded-full bg-[#64A8F0]/8 blur-3xl" />
 
