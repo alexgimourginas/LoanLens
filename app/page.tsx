@@ -19,7 +19,6 @@ function useReveal(threshold = 0.1) {
 
 export default function Home() {
   const router = useRouter();
-  const { ref: chartRef, visible: chartVisible } = useReveal(0.15);
   const { ref: bottomRef, visible: bottomVisible } = useReveal(0.1);
 
   // Wealth projection data (y = remaining debt, inverted for visual)
@@ -132,116 +131,7 @@ export default function Home() {
 
       </section>
 
-      {/* ─── SECTION 2: COMPETITOR QUADRANT CHART ────────────────────── */}
-      <div
-        ref={chartRef}
-        className={`transition-all duration-700 ${chartVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
-      >
-        <section className="py-14 bg-gray-200">
-          <div className="max-w-5xl mx-auto px-8">
-
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="inline-block bg-[#64A8F0]/10 border border-[#64A8F0]/20 text-[#64A8F0] text-[clamp(0.75rem,1.5vw,1.125rem)] font-mono px-3 py-1.5 rounded-full mb-4 uppercase tracking-[0.2em]">
-                Competitive Landscape
-              </div>
-              <h2 className="text-[clamp(3rem,6vw,4.5rem)] font-black tracking-tight text-black">
-                Where LoanLens Stands
-              </h2>
-            </div>
-
-            {/* Chart card */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-              {/* Quadrant background tints */}
-              <div className="relative">
-                <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 pointer-events-none">
-                  <div className="bg-gray-50/60 border-b border-r border-gray-100" />
-                  <div className="bg-blue-50/30 border-b border-gray-100" />
-                  <div className="bg-gray-50/60 border-r border-gray-100" />
-                  <div className="bg-gray-50/60" />
-                </div>
-
-                <div className="relative flex justify-center py-8 px-4">
-                  <svg
-                    width="520"
-                    height="520"
-                    viewBox="-115 -115 230 230"
-                    className="max-w-full"
-                  >
-                    {/* Grid lines */}
-                    {[-80, -60, -40, -20, 20, 40, 60, 80].map((v) => (
-                      <g key={v}>
-                        <line x1={v} y1="-100" x2={v} y2="100" stroke="#f3f4f6" strokeWidth="0.8" />
-                        <line x1="-100" y1={v} x2="100" y2={v} stroke="#f3f4f6" strokeWidth="0.8" />
-                      </g>
-                    ))}
-
-                    {/* Main axes */}
-                    <line x1="-100" y1="0" x2="100" y2="0" stroke="#d1d5db" strokeWidth="1.2" />
-                    <line x1="0" y1="-100" x2="0" y2="100" stroke="#d1d5db" strokeWidth="1.2" />
-
-                    {/* Arrowheads */}
-                    <polygon points="101,0 95,-3.5 95,3.5" fill="#d1d5db" />
-                    <polygon points="-101,0 -95,-3.5 -95,3.5" fill="#d1d5db" />
-                    <polygon points="0,-101 -3.5,-95 3.5,-95" fill="#d1d5db" />
-                    <polygon points="0,101 -3.5,95 3.5,95" fill="#d1d5db" />
-
-                    {/* Axis labels */}
-                    <text x="107" y="3" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Innovation</text>
-                    <text x="-114" y="3" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold">Static</text>
-                    <text x="0" y="-106" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold" textAnchor="middle">Accessibility</text>
-                    <text x="0" y="113" fontSize="5" fill="#9ca3af" fontFamily="monospace" fontWeight="bold" textAnchor="middle">Inaccessibility</text>
-
-                    {/* Quadrant corner labels */}
-                    <text x="6" y="-70" fontSize="5" fill="#e5e7eb" fontFamily="monospace" fontStyle="italic">Innovative + Accessible</text>
-                    <text x="-113" y="-70" fontSize="5" fill="#e5e7eb" fontFamily="monospace" fontStyle="italic">Static + Accessible</text>
-                    <text x="6" y="88" fontSize="5" fill="#e5e7eb" fontFamily="monospace" fontStyle="italic">Innovative + Inaccessible</text>
-
-                    {/* ── Mint (Top Left) ── */}
-                    <circle cx="-62" cy="-52" r="7" fill="#94a3b8" opacity="0.85" />
-                    <text x="-62" y="-62" fontSize="6" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Mint</text>
-
-                    {/* ── Bottom Right competitors ── */}
-                    <circle cx="40" cy="36" r="6" fill="#94a3b8" opacity="0.75" />
-                    <text x="40" y="48" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Credit Karma</text>
-
-                    <circle cx="68" cy="48" r="6" fill="#94a3b8" opacity="0.75" />
-                    <text x="68" y="60" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">NerdWallet</text>
-
-                    <circle cx="28" cy="60" r="6" fill="#94a3b8" opacity="0.75" />
-                    <text x="28" y="72" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">StudentAid.gov</text>
-
-                    <circle cx="52" cy="74" r="6" fill="#94a3b8" opacity="0.75" />
-                    <text x="52" y="86" fontSize="5" fill="#94a3b8" textAnchor="middle" fontFamily="monospace">Rocket Mortgage</text>
-
-                    {/* ── LoanLens (Top Right) ── */}
-                    <circle cx="62" cy="-62" r="16" fill="#64A8F0" opacity="0.12" />
-                    <circle cx="62" cy="-62" r="11" fill="#64A8F0" />
-                    <text x="62" y="-76" fontSize="7" fill="#64A8F0" textAnchor="middle" fontFamily="monospace" fontWeight="bold">LoanLens ★</text>
-                  </svg>
-                </div>
-              </div>
-
-              {/* Legend bar */}
-              <div className="flex justify-center gap-8 py-4 border-t border-gray-100 bg-gray-50/50">
-                <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                  <div className="w-3 h-3 rounded-full bg-[#94a3b8]" />
-                  Competitor
-                </div>
-                <div className="flex items-center gap-2 text-xs font-mono text-[#64A8F0] font-bold">
-                  <div className="w-3 h-3 rounded-full bg-[#64A8F0]" />
-                  LoanLens
-                </div>
-                <div className="text-xs font-mono text-gray-300">
-                  X axis: AI Capability &nbsp;·&nbsp; Y axis: Feature Depth
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* ─── SECTION 3: WEALTH PROJECTION + NEWS ────────────────────── */}
+      {/* ─── SECTION 2: WEALTH PROJECTION + NEWS ────────────────────── */}
       <div
         ref={bottomRef}
         className={`transition-all duration-700 delay-100 ${bottomVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
