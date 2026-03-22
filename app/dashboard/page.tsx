@@ -627,7 +627,7 @@ export default function Dashboard() {
                       <span className="text-white text-xs font-bold">AI</span>
                     </div>
                     <div>
-                      <div className="font-bold text-sm">LoanLens Advisor</div>
+                      <div className="font-bold text-sm">LoanLens AI</div>
                       <div className="flex items-center gap-1.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                         <span className="text-[11px] text-gray-400 font-mono">Online · Secured for you</span>
@@ -1249,7 +1249,7 @@ export default function Dashboard() {
               <span className="text-white text-xs font-bold">AI</span>
             </div>
             <div>
-              <div className="font-bold text-sm">LoanLens Advisor</div>
+              <div className="font-bold text-sm">LoanLens AI</div>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-[11px] text-gray-400 font-mono">
