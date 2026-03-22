@@ -619,6 +619,77 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+
+                {/* ── Mobile AI Chat ── */}
+                <div className="md:hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+                  <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-[#64A8F0] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-xs font-bold">AI</span>
+                    </div>
+                    <div>
+                      <div className="font-bold text-sm">LoanLens Advisor</div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                        <span className="text-[11px] text-gray-400 font-mono">Online · Secured for you</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div ref={chatScrollRef} className="h-72 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+                    {messages.map((msg, i) => (
+                      <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                        <div className={`max-w-[88%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                          msg.role === "user"
+                            ? "bg-[#64A8F0] text-white rounded-br-sm font-mono"
+                            : "bg-gray-50 text-gray-700 border border-gray-100 rounded-bl-sm"
+                        }`}>
+                          {msg.role === "user" ? msg.content : (
+                            <ReactMarkdown components={{
+                              p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                              strong: ({ children }) => <strong className="font-bold text-black">{children}</strong>,
+                              ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-1">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-1">{children}</ol>,
+                              li: ({ children }) => <li className="text-gray-700">{children}</li>,
+                            }}>{msg.content}</ReactMarkdown>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {chatLoading && (
+                      <div className="flex justify-start">
+                        <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center">
+                          {[0, 150, 300].map((d) => (
+                            <div key={d} className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style={{ animationDelay: `${d}ms` }} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="px-4 pt-2 pb-1 border-t border-gray-100 flex gap-1.5 overflow-x-auto">
+                    {["Pay $100 more/mo?", "What's IDR?", "Avalanche vs snowball?"].map((q) => (
+                      <button key={q} onClick={() => setChatInput(q)}
+                        className="flex-shrink-0 text-[10px] font-mono text-[#64A8F0] bg-blue-50 border border-[#64A8F0]/20 px-2.5 py-1 rounded-full hover:bg-blue-100 transition-colors">
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+
+                  <form onSubmit={sendChat} className="px-4 py-3 flex gap-2">
+                    <input
+                      value={chatInput}
+                      onChange={(e) => setChatInput(e.target.value)}
+                      placeholder="Ask about your loan..."
+                      className="flex-1 px-3 py-2.5 rounded-xl border border-gray-200 text-sm font-mono outline-none focus:border-[#64A8F0] focus:ring-2 focus:ring-[#64A8F0]/20 transition-all"
+                    />
+                    <button type="submit" disabled={!chatInput.trim() || chatLoading}
+                      className="bg-[#64A8F0] hover:bg-[#4a94df] disabled:opacity-40 text-white px-4 py-2.5 rounded-xl transition-all flex-shrink-0">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M14 8L2 2l2.5 6L2 14l12-6z" fill="currentColor" />
+                      </svg>
+                    </button>
+                  </form>
+                </div>
               </>
             )}
 
