@@ -125,6 +125,14 @@ export default function Home() {
               {/* Stand */}
               <div className="w-14 h-4 bg-[#374151] mx-auto" />
               <div className="w-28 h-2.5 bg-[#374151] mx-auto rounded-b-md" />
+
+              {/* Frame overlay */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/frame.png"
+                alt=""
+                className="absolute -bottom-6 -right-16 w-56 pointer-events-none"
+              />
             </div>
           </div>
         </div>
