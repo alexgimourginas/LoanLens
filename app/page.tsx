@@ -41,7 +41,7 @@ export default function Home() {
         </a>
       </nav>
 
-      {/* ─── SECTION 1: HERO (slightly cut off) ─────────────────────── */}
+      {/* Hero */}
       <section className="relative min-h-[92vh] pt-24 overflow-hidden bg-white flex flex-col">
 
         {/* Dot grid background */}
@@ -58,7 +58,7 @@ export default function Home() {
 
         <div className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-8 md:px-16 flex flex-col md:flex-row items-center gap-16 py-12">
 
-          {/* ── Left: Copy ── */}
+          {/* Left: Copy */}
           <div className="flex-1 flex flex-col gap-7">
             <h1 className="text-[clamp(3rem,6vw,5rem)] font-black leading-[1.02] tracking-tight text-black">
               See Through
@@ -95,7 +95,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ── Right: Monitor mockup ── */}
+          {/* Right: Monitor */}
           <div className="flex-1 flex justify-center items-center relative">
             {/* Soft glow behind */}
             <div className="absolute w-[350px] h-[350px] rounded-full bg-[#64A8F0]/8 blur-3xl" />
@@ -139,7 +139,7 @@ export default function Home() {
 
       </section>
 
-      {/* ─── SECTION 2: WEALTH PROJECTION + NEWS ────────────────────── */}
+      {/* Wealth + News */}
       <div
         ref={bottomRef}
         className={`transition-all duration-700 delay-100 ${bottomVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
@@ -147,7 +147,7 @@ export default function Home() {
         <section className="py-28 bg-white">
           <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-16">
 
-            {/* ── Left: Wealth Projection ── */}
+            {/* Left: Wealth */}
             <div className="flex flex-col gap-6">
               <div>
                 <div className="inline-block bg-[#64A8F0]/10 border border-[#64A8F0]/20 text-[#64A8F0] text-[11px] font-mono px-3 py-1.5 rounded-full mb-4 uppercase tracking-[0.2em]">
@@ -237,7 +237,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* ── Right: News Articles ── */}
+            {/* Right: News */}
             <div className="flex flex-col gap-6">
               <div>
                 <div className="inline-block bg-gray-100 border border-gray-200 text-gray-500 text-[11px] font-mono px-3 py-1.5 rounded-full mb-4 uppercase tracking-[0.2em]">
@@ -317,7 +317,7 @@ export default function Home() {
         </section>
       </div>
 
-      {/* ─── FOOTER ─────────────────────────────────────────────────── */}
+      {/* Footer */}
       <footer className="bg-black text-gray-500 py-10 px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <span className="text-white font-black text-lg tracking-tight">LoanLens</span>

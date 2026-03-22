@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
         </ul>
       </div>
       <p style="color: #9ca3af; font-size: 12px;">
-        — The LoanLens Team · LoanLensSHU@gmail.com
+        The LoanLens Team · LoanLensSHU@gmail.com
       </p>
     </div>
   `;
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         from: "LoanLens <onboarding@resend.dev>",
         to: [email],
-        subject: "LoanLens — Email Notifications Enabled",
+        subject: "LoanLens: Email Notifications Enabled",
         html,
       }),
     });

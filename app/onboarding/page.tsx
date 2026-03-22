@@ -122,7 +122,7 @@ export default function Onboarding() {
       <div className="flex-1 flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-lg">
 
-          {/* ── STEP 1: Debt details ── */}
+          {/* Step 1: Debt details */}
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="mb-8">
@@ -246,7 +246,7 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* ── STEP 2: Optional info + confirm ── */}
+          {/* Step 2: Optional info */}
           {step === 2 && (
             <form
               onSubmit={handleSubmit}

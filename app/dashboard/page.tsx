@@ -16,7 +16,7 @@ import {
   Legend,
 } from "recharts";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 type LoanData = {
   name: string | null;
@@ -31,7 +31,7 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 type Tab = "command" | "visualizations" | "budget" | "reminders";
 type LoanStore = Record<string, LoanData | null>;
 
-// ─── Demo data (swap with Supabase fetch via ?id= param when ready) ──────────
+// Demo data
 
 const DEMO: LoanData = {
   name: "Alex",
@@ -42,7 +42,7 @@ const DEMO: LoanData = {
   monthly_income: 2800,
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// Helpers
 
 function calcAmortization(balance: number, annualRate: number, payment: number) {
   const r = annualRate / 100 / 12;
@@ -92,7 +92,7 @@ function fmt(n: number) {
   return n.toLocaleString();
 }
 
-// ─── Subcomponents ───────────────────────────────────────────────────────────
+// Subcomponents
 
 function StatCard({
   label,
@@ -131,7 +131,7 @@ const CREDIT_CARD_DEMO: LoanData = {
   monthly_income: 1400,
 };
 
-// ─── Main Dashboard ──────────────────────────────────────────────────────────
+// Main Dashboard
 
 export default function Dashboard() {
   const router = useRouter();
@@ -228,7 +228,7 @@ export default function Dashboard() {
     }
   }, [messages]);
 
-  // ── Derived calculations ────────────────────────────────────────────────────
+  // Derived calculations
 
   const effectivePmt = loan.monthly_payment + extra;
 
@@ -278,7 +278,7 @@ export default function Dashboard() {
     });
   }, [loan.balance, loan.interest_rate, loan.monthly_payment]);
 
-  // ── Chat ───────────────────────────────────────────────────────────────────
+  // Chat
 
   async function sendChat(e: React.SyntheticEvent) {
     e.preventDefault();
@@ -341,12 +341,12 @@ export default function Dashboard() {
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // Render
 
   return (
     <main className="min-h-screen bg-[#f7f8fa] text-black flex flex-col">
 
-      {/* ── Nav ── */}
+      {/* Nav */}
       <nav className="sticky top-0 z-40 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => router.push("/")}
@@ -365,7 +365,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      {/* ── Stats bar ── */}
+      {/* Stats bar */}
       <div className="bg-white border-b border-gray-100 px-6 py-5">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
           <StatCard
@@ -394,7 +394,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── Tab nav ── */}
+      {/* Tab nav */}
       <div className="bg-white border-b border-gray-100 px-6 max-md:px-3">
         <div className="max-w-7xl mx-auto flex max-md:overflow-x-auto max-md:scrollbar-none">
           {(
@@ -420,16 +420,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── Body ── */}
+      {/* Body */}
       <div className="flex-1 flex overflow-hidden max-md:flex-col">
 
-        {/* ── Main content area ── */}
+        {/* Main content */}
         <div className="flex-1 overflow-y-auto p-6 max-md:p-4">
           <div className="max-w-4xl mx-auto flex flex-col gap-6">
 
-            {/* ═══════════════════════════════════════════════════════
-                COMMAND CENTER
-            ═══════════════════════════════════════════════════════ */}
+            
+
+
             {tab === "command" && (
               <>
                 <h2 className="text-2xl font-black">Loan &amp; Aid Command Center</h2>
@@ -615,7 +615,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* ── Mobile AI Chat ── */}
+                {/* Mobile AI Chat */}
                 <div className="md:hidden bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
                   <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-[#64A8F0] flex items-center justify-center flex-shrink-0">
@@ -691,9 +691,9 @@ export default function Dashboard() {
               </>
             )}
 
-            {/* ═══════════════════════════════════════════════════════
-                VISUALIZATIONS
-            ═══════════════════════════════════════════════════════ */}
+            
+
+
             {tab === "visualizations" && (
               <>
                 <h2 className="text-2xl font-black">Visualizations</h2>
@@ -909,9 +909,9 @@ export default function Dashboard() {
               </>
             )}
 
-            {/* ═══════════════════════════════════════════════════════
-                BUDGET & STRATEGY
-            ═══════════════════════════════════════════════════════ */}
+            
+ & STRATEGY
+
             {tab === "budget" && (
               <>
                 <h2 className="text-2xl font-black">Budget &amp; Strategy Engine</h2>
@@ -1079,9 +1079,9 @@ export default function Dashboard() {
               </>
             )}
 
-            {/* ═══════════════════════════════════════════════════════
-                REMINDERS
-            ═══════════════════════════════════════════════════════ */}
+            
+
+
             {tab === "reminders" && (
               <>
                 <h2 className="text-2xl font-black">Reminder Center</h2>
@@ -1237,7 +1237,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* ── AI Chat Sidebar ── */}
+        {/* AI Chat Sidebar */}
         <div className="w-[480px] flex-shrink-0 flex flex-col h-[calc(100vh-9.5rem)] sticky top-[9.5rem] -mt-6 pt-0 pb-3 pl-3 pr-10 bg-[#f7f8fa] max-md:hidden">
         <div className="flex-1 flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
@@ -1346,7 +1346,7 @@ export default function Dashboard() {
         </div>
         </div>
       </div>
-      {/* ── Loan Setup Modal ── */}
+      {/* Loan Setup Modal */}
       {modalOpen && pendingType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md mx-4 overflow-hidden">
