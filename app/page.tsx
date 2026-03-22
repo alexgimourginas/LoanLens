@@ -131,7 +131,7 @@ export default function Home() {
               <img
                 src="/frame.png"
                 alt=""
-                className="absolute -bottom-6 -right-16 w-56 pointer-events-none"
+                className="absolute -bottom-20 -right-16 w-56 pointer-events-none"
               />
             </div>
           </div>
