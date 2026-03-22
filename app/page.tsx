@@ -97,11 +97,11 @@ export default function Home() {
           </div>
 
           {/* ── Right: Monitor mockup ── */}
-          <div className="flex-1 flex justify-center items-center relative">
+          <div className="flex-1 flex justify-center items-center relative max-md:h-56">
             {/* Soft glow behind */}
             <div className="absolute w-[350px] h-[350px] rounded-full bg-[#64A8F0]/8 blur-3xl" />
 
-            <div className="relative drop-shadow-2xl">
+            <div className="relative drop-shadow-2xl max-md:scale-[0.52] max-md:origin-top">
               {/* Screen */}
               <div className="w-[614px] h-[414px] bg-[#070d09] rounded-2xl border-[12px] border-[#374151] overflow-hidden relative">
                 {/* Browser bar */}
@@ -110,57 +110,17 @@ export default function Home() {
                   <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]" />
                   <div className="w-2.5 h-2.5 rounded-full bg-[#28C840]" />
                   <div className="flex-1 bg-gray-700/50 rounded-md text-[10px] text-gray-400 px-2.5 py-0.5 ml-2 font-mono">
-                    loanlens.app/dashboard
+                    loanlens.vercel.app/dashboard
                   </div>
                 </div>
 
-                {/* Dashboard content */}
-                <div className="absolute inset-0 top-9 p-3 flex flex-col gap-2.5">
-                  {/* Stat cards */}
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { label: "BALANCE", value: "$24,500", color: "text-[#64A8F0]" },
-                      { label: "PAYOFF", value: "38 mo", color: "text-green-400" },
-                      { label: "SAVED", value: "$3,210", color: "text-emerald-300" },
-                    ].map((c) => (
-                      <div key={c.label} className="bg-gray-800/80 rounded-lg p-2">
-                        <div className="text-[7px] text-gray-500 font-mono uppercase tracking-widest">{c.label}</div>
-                        <div className={`text-[13px] font-bold font-mono mt-0.5 ${c.color}`}>{c.value}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Mini chart */}
-                  <div className="flex-1 bg-gray-800/60 rounded-lg p-2 flex flex-col gap-1">
-                    <div className="text-[7px] text-gray-500 font-mono uppercase tracking-widest">Balance Over Time</div>
-                    <svg viewBox="0 0 240 52" className="w-full flex-1" preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="mini-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#64A8F0" stopOpacity="0.25" />
-                          <stop offset="100%" stopColor="#64A8F0" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M0,5 C20,6 40,10 75,20 C110,30 150,42 210,50 L240,51"
-                        stroke="#64A8F0" strokeWidth="1.5" fill="none" strokeLinecap="round"
-                      />
-                      <path
-                        d="M0,5 C20,6 40,10 75,20 C110,30 150,42 210,50 L240,51 L240,52 L0,52 Z"
-                        fill="url(#mini-grad)"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* AI message */}
-                  <div className="bg-gray-800/60 rounded-lg px-2.5 py-2 flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-[#64A8F0] flex-shrink-0 flex items-center justify-center">
-                      <span className="text-[7px] font-bold text-white">AI</span>
-                    </div>
-                    <div className="text-[8px] text-gray-300 font-mono leading-relaxed">
-                      Pay $50 extra/mo → save $890 in interest &amp; finish 6 months early
-                    </div>
-                  </div>
-                </div>
+                {/* Dashboard screenshot */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/monitor.png"
+                  alt="LoanLens dashboard"
+                  className="absolute inset-0 top-9 w-full h-[calc(100%-2.25rem)] object-cover object-left-top"
+                />
               </div>
 
               {/* Stand */}

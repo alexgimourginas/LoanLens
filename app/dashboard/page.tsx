@@ -395,8 +395,8 @@ export default function Dashboard() {
       </div>
 
       {/* ── Tab nav ── */}
-      <div className="bg-white border-b border-gray-100 px-6">
-        <div className="max-w-7xl mx-auto flex">
+      <div className="bg-white border-b border-gray-100 px-6 max-md:px-3">
+        <div className="max-w-7xl mx-auto flex max-md:overflow-x-auto max-md:scrollbar-none">
           {(
             [
               ["command", "Command Center"],
@@ -421,10 +421,10 @@ export default function Dashboard() {
       </div>
 
       {/* ── Body ── */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden max-md:flex-col">
 
         {/* ── Main content area ── */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 max-md:p-4">
           <div className="max-w-4xl mx-auto flex flex-col gap-6">
 
             {/* ═══════════════════════════════════════════════════════
@@ -1056,7 +1056,7 @@ export default function Dashboard() {
                       <button
                         type="submit"
                         disabled={!notifyEmail.trim() || notifyStatus === "loading"}
-                        className="w-full bg-[#64A8F0] hover:bg-[#4a94df] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm tracking-wide transition-all duration-200 flex items-center justify-center gap-2"
+                        className="w-full bg-[#64A8F0] hover:bg-[#4a94df] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2"
                       >
                         {notifyStatus === "loading" ? (
                           <>
@@ -1067,7 +1067,7 @@ export default function Dashboard() {
                             SENDING...
                           </>
                         ) : (
-                          "ENABLE NOTIFICATIONS →"
+                          "Enable notifications"
                         )}
                       </button>
                     </form>
@@ -1169,7 +1169,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── AI Chat Sidebar ── */}
-        <div className="w-[480px] flex-shrink-0 flex flex-col h-[calc(100vh-9.5rem)] sticky top-[9.5rem] -mt-6 pt-0 pb-3 pl-3 pr-10 bg-[#f7f8fa]">
+        <div className="w-[480px] flex-shrink-0 flex flex-col h-[calc(100vh-9.5rem)] sticky top-[9.5rem] -mt-6 pt-0 pb-3 pl-3 pr-10 bg-[#f7f8fa] max-md:hidden">
         <div className="flex-1 flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
           {/* Chat header */}
