@@ -12,6 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export const metadata: Metadata = {
   title: "LoanLens | See Through Your Debt",
   description: "AI-powered debt payoff strategist. Enter your loans, get a personalized timeline, and let AI coach you through every payment decision.",

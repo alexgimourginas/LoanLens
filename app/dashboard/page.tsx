@@ -350,19 +350,13 @@ export default function Dashboard() {
       <nav className="sticky top-0 z-40 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => router.push("/")}
-          className="text-xl font-black tracking-tight hover:text-[#64A8F0] transition-colors"
+          className="text-2xl font-black tracking-tight hover:text-[#64A8F0] transition-colors"
         >
           LoanLens
         </button>
-        <div className="flex items-center gap-3">
-          {loan.name && (
-            <span className="text-sm text-gray-400 font-mono">Hello, {loan.name}</span>
-          )}
-          <div className="flex items-center gap-1.5 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-[11px] font-mono text-green-600">Live</span>
-          </div>
-        </div>
+        {loan.name && (
+          <span className="text-sm text-gray-400 font-mono">Hello, {loan.name}</span>
+        )}
       </nav>
 
       {/* Stats bar */}
@@ -909,8 +903,6 @@ export default function Dashboard() {
               </>
             )}
 
-            
- & STRATEGY
 
             {tab === "budget" && (
               <>

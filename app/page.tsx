@@ -74,7 +74,7 @@ export default function Home() {
             <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => router.push("/onboarding")}
-                className="bg-[#64A8F0] hover:bg-[#4a94df] text-white font-bold px-16 py-4 rounded-xl text-base tracking-wide transition-all duration-200 shadow-lg shadow-[#64A8F0]/25 hover:shadow-[#64A8F0]/40 hover:-translate-y-0.5"
+                className="bg-[#64A8F0] hover:bg-[#4a94df] text-white px-16 py-4 rounded-xl text-base tracking-wide transition-all duration-200 shadow-lg shadow-[#64A8F0]/25 hover:shadow-[#64A8F0]/40 hover:-translate-y-0.5"
               >
                 BUILD MY PLAN →
               </button>
@@ -125,14 +125,6 @@ export default function Home() {
               {/* Stand */}
               <div className="w-14 h-4 bg-[#374151] mx-auto" />
               <div className="w-28 h-2.5 bg-[#374151] mx-auto rounded-b-md" />
-
-              {/* Frame overlay */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/frame.png"
-                alt=""
-                className="absolute -bottom-14 -right-6 w-52 pointer-events-none"
-              />
             </div>
           </div>
         </div>
